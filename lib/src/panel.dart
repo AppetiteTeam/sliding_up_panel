@@ -213,6 +213,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
   VelocityTracker _vt = new VelocityTracker.withKind(PointerDeviceKind.touch);
 
   bool _isPanelVisible = true;
+  bool shouldSlide = true;
 
   @override
   void initState() {
@@ -394,8 +395,23 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
     return Listener(
       onPointerDown: (PointerDownEvent p) => _vt.addPosition(p.timeStamp, p.position),
       onPointerMove: (PointerMoveEvent p) {
-        _vt.addPosition(p.timeStamp, p.position); // add current position for velocity tracking
-        _onGestureSlide(p.delta.dy);
+        _vt.addPosition(p.timeStamp, p.position);
+        // add current position for velocity tracking
+        if (p.delta.dx.abs() > p.delta.dy.abs() && shouldSlide) {
+          shouldSlide = false;
+        } else if (p.delta.dx.abs() < p.delta.dy.abs() && !shouldSlide) {
+          shouldSlide = true;
+        }
+        if (shouldSlide) {
+          _onGestureSlide(p.delta.dy);
+        }
+      },
+      onPointerUp: (PointerUpEvent p) {
+        if (shouldSlide) {
+          _onGestureEnd(_vt.getVelocity());
+        } else {
+          shouldSlide = true;
+        }
       },
       onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
       child: child,
