@@ -413,7 +413,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
           shouldSlide = true;
         }
       },
-      onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
+      // onPointerUp: (PointerUpEvent p) => _onGestureEnd(_vt.getVelocity()),
       child: child,
     );
   }
